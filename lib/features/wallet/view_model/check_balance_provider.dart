@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:match_maker/core/services/local_storage.dart';
 import 'package:match_maker/features/wallet/models/check_balance_model.dart';
-import 'package:match_maker/features/wallet/services/verify_add_payment_service.dart';
+import 'package:match_maker/features/wallet/services/wallet_service.dart';
 
 enum CheckBalanceStatus { initial, loading, success, error }
 
@@ -27,7 +27,7 @@ class CheckBalance extends ChangeNotifier {
       final response = await WalletService.checkBalance();
       _checkBalanceData = response;
 
-      if (response.data != null && response.data!.sId!.isNotEmpty) {
+      if (response!.data != null && response.data!.sId!.isNotEmpty) {
         await LocalStorage.saveWalletId(response.data?.sId ?? "");
       } else {
         _error = "something went wrong";

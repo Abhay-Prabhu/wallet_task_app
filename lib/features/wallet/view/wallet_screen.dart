@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:match_maker/core/constants/dimensions.dart';
-import 'package:match_maker/core/services/local_storage.dart';
 import 'package:match_maker/core/widgets/button.dart';
-import 'package:match_maker/features/wallet/services/verify_add_payment_service.dart';
+import 'package:match_maker/core/widgets/circular_progress_indicator.dart';
+import 'package:match_maker/features/wallet/view_model/redeem_detail_provider.dart';
 import 'package:match_maker/features/wallet/view_model/check_balance_provider.dart';
-import 'package:match_maker/features/wallet/widgets/select_account_type.dart';
+import 'package:match_maker/features/wallet/view/select_account_type.dart';
+import 'package:match_maker/features/wallet/widgets/wallet_display_card.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/app_theme.dart';
+import '../../../core/utils/enum.dart';
+import '../../../core/widgets/custom_dialog_box.dart';
 import '../widgets/bottom_sheet.dart';
 import 'base_wallet_page.dart';
 
@@ -16,118 +18,200 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // get my balance
-    // final response = await WalletService.checkBalance();
-    // print("${response.toString()}   ${response.data} ");
+    Future.delayed(Duration.zero, () {
+      Provider.of<CheckBalance>(context, listen: false).checkBalance();
+    });
 
-    // print(WalletService.verifyAddPayment(
-    //   bankBranch: "ABCD",
-    //   bankIfsc: "BANKIFSC123",
-    //   bankName: "TEST_BANK",
-    //   paymentMethod: "BANK_ACCOUNT",
-    //   walletId: LocalStorage.getWalletId().toString(),
-    // ));
-
-    //  Future.delayed(Duration.zero, (){
-    //   Provider.of<CheckBalance>(context, listen: false).checkBalance();
-    //  });
     return BaseWalletPage(
       content: Padding(
         padding: EdgeInsets.all(context.padding24),
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Your accounts",
-                      style: TextStyle(
-                        fontSize: context.font16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: context.space12,
-                    ),
-                    Text(
-                      "You can add up to 2 accounts",
-                      style: TextStyle(
+              Text(
+                "Your accounts",
+                style: TextStyle(
+                  fontSize: context.font16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: context.space12),
+              Text(
+                "You can add up to 2 accounts",
+                style: TextStyle(
+                  fontSize: context.font16,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.grey,
+                ),
+              ),
+              SizedBox(height: context.space12),
+
+              // *** Redeem Details Consumer ***
+              Consumer<RedeemDetailsProvider>(
+                  builder: (context, provider, child) {
+                final data = provider.redeemDetails?.data;
+                if (provider.state == ViewState.loading) {
+                  return Expanded(
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: CustomCircularProgressIndicator()),
+                  );
+                } else if (provider.state == ViewState.error) {
+                  return Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        "Something went wrong, Please try again...",
+                        style: TextStyle(
                           fontSize: context.font16,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.grey),
+                          color: AppTheme.grey,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              Center(
-                // alignment: Alignment.center,
-                child: Text(
-                  "No payments accounts available",
-                  style: TextStyle(
-                      fontSize: context.font16,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.grey),
-                ),
-              ),
-              SizedBox(
-                child: Column(
-                  children: [
-                    Text(
-                      "Provided account/UPI details will be used for purchases, transferring reward and cashbacks",
-                      textAlign: TextAlign.center,
+                  );
+                } else if (data == null ||
+                    data.isEmpty ||
+                    !data
+                        .any((account) => account.bankAccountDetails != null)) {
+                  return Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        "No payments accounts available",
+                        style: TextStyle(
+                          fontSize: context.font16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.grey,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final account = data[index];
+                      final upiString =
+                          account.bankAccountDetails?.bankAccountNumber ?? '';
+                      String maskedUPI = upiString.length > 5
+                          ? '* ' * (upiString.length - 5) +
+                              upiString.substring(upiString.length - 5)
+                          : upiString;
+
+                      return WalletDisplayCard(
+                        label: "Bank Account",
+                        value: maskedUPI,
+                        onEdit: () {},
+                        onDelete: () async {
+                          final provider = Provider.of<RedeemDetailsProvider>(
+                              context,
+                              listen: false);
+
+                          await provider.initiateDelete("BANK_ACCOUNT");
+
+                          if (provider.initiateDeleteState ==
+                              ViewState.loaded) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return CustomDialogBox(
+                                  onConfirm: () async {
+                                    await provider.deleteRedeem();
+
+                                    if (!context.mounted) return;
+
+                                    if (provider.deleteRedeemState ==
+                                        ViewState.loaded) {
+                                      await provider.fetchRedeemDetails();
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                "Account deleted successfully")),
+                                      );
+                                    } else if (provider.deleteRedeemState ==
+                                        ViewState.error) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              provider.deleteRedeemError ??
+                                                  "Failed to delete account"),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                            ).then((_) {
+                              provider.fetchRedeemDetails().catchError((error) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Failed to refresh data. Please try again.")));
+                                }
+                              });
+                            });
+                          } else if (provider.initiateDeleteState ==
+                              ViewState.error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(provider.initiateDeleteError ??
+                                    "Failed to initiate delete"),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
+                }
+              }),
+
+              const Spacer(),
+
+              // *** Bottom Note + Add Account Button *** //
+              Column(
+                children: [
+                  Text(
+                    "Provided account/UPI details will be used for purchases, transferring reward and cashbacks",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: context.font14,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.black,
+                    ),
+                  ),
+                  SizedBox(height: context.space12),
+                  CustomButton(
+                    content: Text(
+                      "Add account",
                       style: TextStyle(
-                          fontSize: context.font14,
-                          fontWeight: FontWeight.w500,
-                          color: AppTheme.black),
+                        color: AppTheme.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.font14,
+                      ),
                     ),
-                    SizedBox(
-                      height: context.space12,
+                    onTap: () => Bottomsheet.showBottom(
+                      context: context,
+                      content: SelectAccountType(),
                     ),
-                    CustomButton(
-                      onTap: () => Bottomsheet.showBottom(context: context, content: SelectAccountType()),
-                      buttonText: "Add account",
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
     );
-
-    // Scaffold(
-    //   backgroundColor: Colors.white,
-    //   body: Column(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     crossAxisAlignment: CrossAxisAlignment.center,
-    //     children: [
-    //       SizedBox(height: 50,),
-    //       Consumer<CheckBalance>(builder:(context, provider, child){
-    //         if(provider.status == CheckBalanceStatus.loading){
-    //           print("check balance status is loading");
-    //           return CircularProgressIndicator(
-    //             color: Colors.black,
-    //           );
-
-    //         }
-    //         else if (provider.status == CheckBalanceStatus.error){
-    //           return Text("Error in fetching balance -- ${provider.error}");
-    //         }
-    //         else if(provider.status == CheckBalanceStatus.success){
-    //           return Text("{Balance fetched successfully -- ${provider.checkBalanceData!.data}}");
-    //         }
-    //         return Text("last return");
-
-    //       } ,)
-    //     ],
-    //   ),
-    // );
   }
 }

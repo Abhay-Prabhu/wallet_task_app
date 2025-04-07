@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:match_maker/core/constants/dimensions.dart';
 import 'package:match_maker/core/dio_client.dart';
 import 'package:match_maker/core/services/local_storage.dart';
-import 'package:match_maker/features/wallet/services/verify_add_payment_service.dart';
+import 'package:match_maker/core/widgets/button.dart';
+import 'package:match_maker/features/wallet/services/wallet_service.dart';
+import 'package:match_maker/features/wallet/view/wallet_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../../../core/app_theme.dart';
+import '../../wallet/view_model/redeem_detail_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -10,28 +17,51 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // ***** hard code token untill auth is implemented ******//
     String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2VjYzk0OGE0NTBiYzhhOTA1OGNlMzMiLCJfcGhvbmVOdW1iZXIiOiI3NjIwMTQ2Mzc5IiwidXNlclR5cGVJZCI6IjY3MGNhMGQ0NDllNGVmOGZmODRiM2U5NyIsInVzZXJUeXBlIjoibWF0Y2htYWtlciIsImlhdCI6MTc0Mzc1MTA1OSwiZXhwIjoxNzQzNzcyNjU5fQ.brEOAOS16rSFfR6ibWkEIbdl6K98w3jI_X6wcIOUvfs";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2VjYzk0OGE0NTBiYzhhOTA1OGNlMzMiLCJfcGhvbmVOdW1iZXIiOiI3NjIwMTQ2Mzc5IiwidXNlclR5cGVJZCI6IjY3MGNhMGQ0NDllNGVmOGZmODRiM2U5NyIsInVzZXJUeXBlIjoibWF0Y2htYWtlciIsImlhdCI6MTc0Mzk4ODgyMSwiZXhwIjoxNzQ0MDEwNDIxfQ.DNBtZtv4XRXvfuxOOaKVQBfB8VDVtfGhhIVvGrU0cAw";
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(context.space16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomButton(
+                onTap: () async {
+                  LocalStorage.saveToken(token);
+                  // *** update the token in auth header ***//
+                  DioClient.updateAuthToken(
+                      token: LocalStorage.getToken().toString());
+                  // *** store the token in local storage ***//
 
-    // store the token in local storage
-    LocalStorage.saveToken(token);
+                  debugPrint(
+                      "status of token storing in local storage ${LocalStorage.getToken()}");
+                  final walletData = await WalletService.checkBalance();
 
-    // update the token in auth header
-    DioClient.updateAuthToken(token: LocalStorage.getToken().toString());
-  
-    // VerifyAddPaymentService.verifyAddPayment(walletId: walletId, paymentMethod: paymentMethod, bankIfsc: bankIfsc, bankName: bankName, bankBranch: bankBranch);
+                  // *** store wallet Id in Local Storage *** //
+                  LocalStorage.saveWalletId(walletData!.data!.sId.toString());
+                  print(
+                      "Wallet Id from local storage ${LocalStorage.getWalletId()}");
 
-    return  Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ElevatedButton(onPressed: (){
-            print(WalletService.checkBalance());
-            // print(WalletService.verifyAddPayment(walletId: "", paymentMethod: paymentMethod, bankIfsc: bankIfsc, bankName: bankName, bankBranch: bankBranch));
-            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> WalletScreen()));
-
-          }, child: Text(" Go to Home"))
-        ],
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ChangeNotifierProvider(
+                        create: (_) =>
+                            RedeemDetailsProvider()..fetchRedeemDetails(),
+                        child: WalletScreen(),
+                      ),
+                    ),
+                  );
+                },
+                content: Text(
+                  "Login",
+                  style: TextStyle(
+                    color: AppTheme.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: context.font14,
+                  ),
+                ))
+          ],
+        ),
       ),
     );
   }

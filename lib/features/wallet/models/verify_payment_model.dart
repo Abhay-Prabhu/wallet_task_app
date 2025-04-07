@@ -1,36 +1,21 @@
-class VerifyAddPaymentModel {
-  String? walletId;
-  String? paymentMethod;
-  String? bankAccountNumber;
-  String? bankIfsc;
-  String? bankName;
-  String? bankBranch;
+class VerifyPaymentModel {
+  String? otp;
+  String? hashtedDetails;
+  String? hashedOtp;
 
-  VerifyAddPaymentModel(
-      {this.walletId,
-      this.paymentMethod,
-      this.bankAccountNumber,
-      this.bankIfsc,
-      this.bankName,
-      this.bankBranch});
+  VerifyPaymentModel({this.otp, this.hashtedDetails, this.hashedOtp});
 
-  VerifyAddPaymentModel.fromJson(Map<String, dynamic> json) {
-    walletId = json['walletId'];
-    paymentMethod = json['paymentMethod'];
-    bankAccountNumber = json['bankAccountNumber'];
-    bankIfsc = json['bankIfsc'];
-    bankName = json['bankName'];
-    bankBranch = json['bankBranch'];
+  VerifyPaymentModel.fromJson(Map<String, dynamic> json) {
+    otp = json['message'];
+    hashtedDetails = json['hashtedDetails'];
+    hashedOtp = json['hashedOtp'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['walletId'] = this.walletId;
-    data['paymentMethod'] = this.paymentMethod;
-    data['bankAccountNumber'] = this.bankAccountNumber;
-    data['bankIfsc'] = this.bankIfsc;
-    data['bankName'] = this.bankName;
-    data['bankBranch'] = this.bankBranch;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['message'] = otp;
+    data['hashtedDetails'] = hashtedDetails;
+    data['hashedOtp'] = hashedOtp;
     return data;
   }
 }

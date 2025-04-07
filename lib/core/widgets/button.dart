@@ -4,10 +4,9 @@ import 'package:match_maker/core/constants/dimensions.dart';
 import '../app_theme.dart';
 
 class CustomButton extends StatelessWidget {
+  final Widget content;
   final VoidCallback onTap;
-  final String buttonText;
-  const CustomButton(
-      {super.key, required this.buttonText, required this.onTap});
+  const CustomButton({super.key, required this.onTap, required this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +20,7 @@ class CustomButton extends StatelessWidget {
             borderRadius:
                 BorderRadius.all(Radius.circular(context.borderRadius8))),
         child: Center(
-          child: Text(
-            buttonText,
-            style: TextStyle(
-              color: AppTheme.white,
-              fontWeight: FontWeight.bold,
-              fontSize: context.font14,
-            ),
-          ),
+          child: content,
         ),
       ),
     );

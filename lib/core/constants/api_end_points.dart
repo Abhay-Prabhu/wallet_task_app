@@ -9,11 +9,20 @@ class ApiEndPoints {
   //
   //
   //  *** verify add payment details
-  static const verifyAddPayment = "$baseUrl/wallet/add-payment-details";
+  static const verifyAddPayment = "/wallet/add-payment-details";
 
   // **** save payment details
-  static const savePaymentDetails = "$baseUrl/wallet/save-payment-details";
+  static const savePayment = "/wallet/save-payment-details";
 
   //  ***** check Balance **********  //
-  static const checkBalance = "$baseUrl/wallet/get-wallet-balance";
+  static const checkBalance = "/wallet/get-wallet-balance";
+
+  // *** Redeem Details ***//
+  static const redeemDetail = "/wallet/get-redeem-details";
+
+  // *** Initiate Delete Payment *** //
+  static const initiateRedeemDelete = "/wallet/initiate-deleting-redeem-details";
+
+  // *** Delete Redeem Details *** //
+  static const deleteRedeem = "/wallet/delete-redeem-details";
 }

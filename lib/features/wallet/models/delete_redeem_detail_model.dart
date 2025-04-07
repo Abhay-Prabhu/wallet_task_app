@@ -1,9 +1,9 @@
-class SavePaymentModel {
+class DeleteRedeemDetailModel {
   String? message;
 
-  SavePaymentModel({this.message});
+  DeleteRedeemDetailModel({this.message});
 
-  SavePaymentModel.fromJson(Map<String, dynamic> json) {
+  DeleteRedeemDetailModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
   }
 
@@ -13,4 +13,3 @@ class SavePaymentModel {
     return data;
   }
 }
-
