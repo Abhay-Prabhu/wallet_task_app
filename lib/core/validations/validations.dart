@@ -38,6 +38,25 @@ class Validations {
     return null;
   }
 
+
+   // *** Validate account number ***//
+  static String? validateConfirmAccountNumber(String? value, String? confirmValue) {
+    if (confirmValue== null || confirmValue.trim().isEmpty) {
+      return "Confirm Account number cannot be empty";
+    }
+
+    if (confirmValue != value ) {
+      return "Account number and confirm account should match";
+    }
+
+    if (!RegExp(r'^\d{12}$').hasMatch(confirmValue.trim())) {
+      return " Confirm Account number should be 12 digits";
+    }
+    return null;
+  }
+
+ 
+
   //  *** Validate Bank Branch  ***//
   static String? validateBankBranch(String? value) {
     if (value == null || value.trim().isEmpty) {

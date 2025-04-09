@@ -7,7 +7,7 @@ class OtpProvider  extends ChangeNotifier{
 
   void updateOTP(String digit){
     if(_otp.length < 6){
-      _otp += digit;
+      _otp = digit;
       notifyListeners();
     }
   }

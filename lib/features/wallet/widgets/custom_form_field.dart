@@ -8,11 +8,17 @@ class CustomFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextEditingController textController;
   final String hintText;
-   final TextInputType? keyboardType;
+  final TextInputType? keyboardType;
   final bool isNumeric;
   final bool allowSpecialCharacters;
   const CustomFormField(
-      {super.key, required this.hintText, required this.validator, required this.textController, this.keyboardType, this.isNumeric = false, this.allowSpecialCharacters = false});
+      {super.key,
+      required this.hintText,
+      required this.validator,
+      required this.textController,
+      this.keyboardType,
+      this.isNumeric = false,
+      this.allowSpecialCharacters = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +30,7 @@ class CustomFormField extends StatelessWidget {
         keyboardType: keyboardType ?? TextInputType.text,
         inputFormatters: [
           FilteringTextInputFormatter.deny(RegExp(r'^\s')),
-
-          if (isNumeric)
-            FilteringTextInputFormatter.digitsOnly,
-
+          if (isNumeric) FilteringTextInputFormatter.digitsOnly,
           if (!allowSpecialCharacters)
             FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s]')),
         ],
@@ -61,18 +64,18 @@ class CustomFormField extends StatelessWidget {
           hintText: hintText,
           errorMaxLines: 3,
           errorStyle: TextStyle(
-            fontFamily: 'Montserrat',
+              fontFamily: 'Montserrat',
               fontSize: context.font16,
               color: AppTheme.error,
               fontWeight: FontWeight.w400),
           hintStyle: TextStyle(
-            fontFamily: 'Montserrat',
+              fontFamily: 'Montserrat',
               fontSize: context.font16,
               color: AppTheme.grey,
               fontWeight: FontWeight.w400),
         ),
         style: TextStyle(
-          fontFamily: 'Montserrat',
+            fontFamily: 'Montserrat',
             fontSize: context.font16,
             color: AppTheme.black.withOpacity(0.7),
             fontWeight: FontWeight.w200),
@@ -82,5 +85,3 @@ class CustomFormField extends StatelessWidget {
     );
   }
 }
-
-

@@ -14,6 +14,7 @@ class Bottomsheet {
     final result = await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      
       backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius:
@@ -24,6 +25,7 @@ class Bottomsheet {
           padding: EdgeInsets.only(
               left: context.space8, right: context.space8, top: 100),
           child: Container(
+            width: double.infinity,
             decoration: BoxDecoration(
               color: AppTheme.white,
               borderRadius: BorderRadius.vertical(

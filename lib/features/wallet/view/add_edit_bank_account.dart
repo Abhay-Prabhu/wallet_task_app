@@ -66,7 +66,6 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AccountProvider>(context, listen: true);
-
     return Container(
       decoration: BoxDecoration(
           color: AppTheme.white,
@@ -121,7 +120,7 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
               SizedBox(height: context.space16),
               // ** Confirm Account NUmber ***//
               Text(
-                "Confirm Account Number",
+                "Confirm Account Nmber",
                 style: TextStyle(
                     fontSize: context.font16,
                     color: AppTheme.black,
@@ -133,7 +132,7 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
               CustomFormField(
                 keyboardType: TextInputType.number,
                 textController: provider.confirmAccountNumberController,
-                validator: (value) => Validations.validateAccountNumber(value),
+                validator: (value) => Validations.validateConfirmAccountNumber(value, provider.accountNumberController.text ),
                 isNumeric: true,
                 allowSpecialCharacters: false,
                 hintText: "Example: 123456789012",
@@ -199,53 +198,36 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
                       provider.isEditMode = widget.isEditMode;
                       await provider.submitForm(
                         isEditMode: widget.isEditMode,
-                        // walletId: "67ecc954a450bc8a9058ce43",
                         walletId: LocalStorage.getWalletId().toString(),
                         paymentMethod: "BANK_ACCOUNT",
                       );
 
                       if (provider.state == ViewState.loaded) {
-                        Navigator.of(context).pop(true);
-
                         if (!widget.isEditMode) {
+                          final otp =
+                              provider.accountModel?.otp;
+                            print("print from otp {}**************");
+                            CustomToast.showToast(context: context,
+                                message: "Otp is $otp", isError: false);
                           // *** Schedule the next bottom sheet to be shown after this frame ***//
                           WidgetsBinding.instance
                               .addPostFrameCallback((_) async {
-                            // final isOtpVerified =
                             await Bottomsheet.showBottom(
                               title: "Verify OTP",
                               context: context,
                               content: ChangeNotifierProvider(
-                                // value: context.read<RedeemDetailsProvider>(),
                                 create: (_) => SavePaymentProvider(),
                                 child: VerifyOTP(),
                               ),
-                              // onDismissed: () => provider.clearControllers(),
-                            );
-                            // if (isOtpVerified == true) {
-                            //   final redeemProvider =
-                            //       Provider.of<RedeemDetailsProvider>(context,
-                            //           listen: false);
-                            //   redeemProvider.fetchRedeemDetails();
-                            //   provider.clearControllers();
-                            // }
+                            );  
                           });
-
-                          print("moving to next verify otp screen");
                         }
                       } else if (provider.state == ViewState.error) {
-                        // ScaffoldMessenger.of(
-                        //         Navigator.of(context, rootNavigator: true)
-                        //             .context)
-                        //     .showSnackBar(
-                        //   SnackBar(
-                        //     content: Text(provider.errorMessage ??
-                        //         "Something went wrong"),
-                        //   ),
-                        // );
+                        
+                        
 
-                        CustomToast.showCustomToast(
-                          context: context,
+                        CustomToast.showToast(context: context,
+                          isError: true,
                           message: "Something went wrong",
                         );
                       }

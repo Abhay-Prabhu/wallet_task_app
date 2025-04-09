@@ -17,7 +17,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // ***** hard code token untill auth is implemented ******//
     String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2VjYzk0OGE0NTBiYzhhOTA1OGNlMzMiLCJfcGhvbmVOdW1iZXIiOiI3NjIwMTQ2Mzc5IiwidXNlclR5cGVJZCI6IjY3MGNhMGQ0NDllNGVmOGZmODRiM2U5NyIsInVzZXJUeXBlIjoibWF0Y2htYWtlciIsImlhdCI6MTc0NDE2NjY3OCwiZXhwIjoxNzQ0MTg4Mjc4fQ.d4Fjggsmdqdo54kYuohrgP3JEq8FsXHIEI4Zpa5NH2o";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2VjYzk0OGE0NTBiYzhhOTA1OGNlMzMiLCJfcGhvbmVOdW1iZXIiOiI3NjIwMTQ2Mzc5IiwidXNlclR5cGVJZCI6IjY3MGNhMGQ0NDllNGVmOGZmODRiM2U5NyIsInVzZXJUeXBlIjoibWF0Y2htYWtlciIsImlhdCI6MTc0NDE5NDk4OSwiZXhwIjoxNzQ0MjE2NTg5fQ._Qqu9Y-tiBcJh5-XugiPc5WVLr-HtseErpCG5c34h7M";
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(context.space16),

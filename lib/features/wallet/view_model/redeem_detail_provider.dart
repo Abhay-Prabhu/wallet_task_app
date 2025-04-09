@@ -131,6 +131,7 @@ class RedeemDetailsProvider extends ChangeNotifier {
       final response = await WalletService.deleteRedeemDetail(
           initialDeleteModel: initiateDeleteModel!);
       if (response != null) {
+        
         _deleteRedeemDetailModel = response;
         _deleteRedeemError = null;
         _deleteRedeemState = ViewState.loaded;

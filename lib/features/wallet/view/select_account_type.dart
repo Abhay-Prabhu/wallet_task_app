@@ -56,7 +56,7 @@ class _SelectAccountTypeState extends State<SelectAccountType> {
               create: (_) => AccountProvider(),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pop();
+                  // Navigator.of(context).pop();
                   Bottomsheet.showBottom(
                       title: "Add Bank Account",
                       context: context,

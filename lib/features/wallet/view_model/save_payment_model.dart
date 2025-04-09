@@ -41,7 +41,6 @@ class SavePaymentProvider extends ChangeNotifier {
         hastedDetails: hastedDetails,
         hastedOtp: hastedOtp,
       );
-
       if (response != null) {
         _paymentModel = response;
         _errorMessage = null;
@@ -54,6 +53,7 @@ class SavePaymentProvider extends ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = e.toString();
+      print("error from verify otp provider -- ${_errorMessage}");
       setState(ViewState.error);
       return false;
     } finally {

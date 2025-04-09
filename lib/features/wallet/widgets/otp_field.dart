@@ -18,7 +18,6 @@ class OTPField extends StatelessWidget {
           border: Border.all(color: AppTheme.grey),
           borderRadius: BorderRadius.circular(8)),
       child: Consumer<OtpProvider>(builder: (context, OtpProvider, _) {
-        // String otp = OtpProvider.otp;
         return TextField(
           onChanged: (value) {
             OtpProvider.updateOTP(value);

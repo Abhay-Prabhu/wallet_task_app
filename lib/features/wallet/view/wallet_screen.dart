@@ -16,8 +16,22 @@ import '../../../core/widgets/custom_toast.dart';
 import '../widgets/bottom_sheet.dart';
 import 'base_wallet_page.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
+
+  @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<RedeemDetailsProvider>(context, listen: false)
+          .fetchRedeemDetails();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +71,6 @@ class WalletScreen extends StatelessWidget {
               // *** Redeem Details Consumer ***
               Consumer<RedeemDetailsProvider>(
                   builder: (context, provider, child) {
-                // final accountProvider = Provider.of<AccountProvider>(context);
-                // final data = provider.redeemDetails?.data;
                 if (provider.state == ViewState.loading) {
                   return Expanded(
                     child: Align(
@@ -168,14 +180,16 @@ class WalletScreen extends StatelessWidget {
                                           .clearControllers();
                                       await provider.fetchRedeemDetails();
                                       if (!context.mounted) return;
-                                      CustomToast.showCustomToast(
+                                      CustomToast.showToast(
                                         context: context,
+                                        isError: false,
                                         message: "Account deleted successfully",
                                       );
                                     } else if (provider.deleteRedeemState ==
                                         ViewState.error) {
-                                      CustomToast.showCustomToast(
+                                      CustomToast.showToast(
                                         context: context,
+                                        isError: true,
                                         message: "Failed to delete account",
                                       );
                                     }
@@ -185,8 +199,9 @@ class WalletScreen extends StatelessWidget {
                             ).then((_) {
                               provider.fetchRedeemDetails().catchError((error) {
                                 if (context.mounted) {
-                                  CustomToast.showCustomToast(
+                                  CustomToast.showToast(
                                       context: context,
+                                      isError: true,
                                       message:
                                           "Failed to refresh data. Please try again.");
                                 }
@@ -194,8 +209,9 @@ class WalletScreen extends StatelessWidget {
                             });
                           } else if (provider.initiateDeleteState ==
                               ViewState.error) {
-                            CustomToast.showCustomToast(
+                            CustomToast.showToast(
                               context: context,
+                              isError: true,
                               message: "Failed to initiate delete",
                             );
                           }

@@ -1,43 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../app_theme.dart';
+
+
 
 class CustomToast {
-  
+  static void showToast({required String message, required bool isError, int seconds = 10, required BuildContext context}) {
+    Fluttertoast.cancel(); // Cancel any existing toasts
 
-static void showCustomToast({required BuildContext context,required  String message}) {
-  final overlay = Overlay.of(context);
-  final overlayEntry = OverlayEntry(
-    builder: (context) => Positioned(
-      bottom: 80, 
-      left: 20,
-      right: 20,
-      child: Material(
-        color: Colors.transparent,
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.85),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              message,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
+    FToast fToast = FToast();
+    // fToast.init(navigatorKey.currentContext!); // context must be globally accessible
+fToast.init(context);
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isError ? AppTheme.error : AppTheme.grey,
       ),
-    ),
-  );
+      child: Text(
+        message,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
+    );
 
-  overlay.insert(overlayEntry);
-
-
-  Future.delayed(const Duration(seconds: 2)).then((_) {
-    overlayEntry.remove();
-  });
-}
-
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.TOP,
+      toastDuration: Duration(seconds: seconds),
+    );
+  }
 }
