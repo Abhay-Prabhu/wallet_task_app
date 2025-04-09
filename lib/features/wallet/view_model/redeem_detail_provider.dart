@@ -18,9 +18,29 @@ class RedeemDetailsProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isAccountNull = false;
+  bool _isUpiNull = false;
+
+  bool get isBankAccountNull => _isAccountNull;
+  bool get isBankUpiNull => _isUpiNull;
+
+  bool _otpVerificationSuccessful = false;
+  bool get otpVerificationSuccessful => _otpVerificationSuccessful;
+
+  void setOtpVerificationSuccessful(bool value) {
+    _otpVerificationSuccessful = value;
+    notifyListeners();
+  }
+
   void _setState(ViewState newState) {
     _state = newState;
     notifyListeners();
+  }
+
+  setFlags(bool isAccountNull, bool isUpiNull) {
+    _isAccountNull = isAccountNull;
+    _isUpiNull = isUpiNull;
+    print("print from set flags bank - $_isAccountNull, upi $isUpiNull");
   }
 
   Future<void> fetchRedeemDetails() async {
@@ -30,7 +50,13 @@ class RedeemDetailsProvider extends ChangeNotifier {
 
     try {
       final result = await WalletService.redeemDetails();
+      notifyListeners();
       if (result != null) {
+        print(
+            "print from fetch redeem details - bank ${result.data!.every((element) => element.bankAccountDetails == null)}, upi - ${result.data!.every((element) => element.upi == null)}");
+        setFlags(
+            result.data!.every((element) => element.bankAccountDetails == null),
+            result.data!.every((element) => element.upi == null));
         _redeemDetails = result;
         _errorMessage = null;
         _setState(ViewState.loaded);

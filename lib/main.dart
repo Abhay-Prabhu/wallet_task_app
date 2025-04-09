@@ -15,7 +15,8 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context)=> RedeemDetailsProvider()),
-      ChangeNotifierProvider(create: (context) => AddAccountProvider()),
+      ChangeNotifierProvider(create: (context) => AccountProvider()),
+      ChangeNotifierProvider(create: (context) => AccountProvider()),
       ChangeNotifierProvider(create: (context) => CheckBalance()),
       ChangeNotifierProvider(create: (context) => OtpProvider()),
       ChangeNotifierProvider(create: (context) => OTPTimerProvider()),
@@ -31,7 +32,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        // home: WalletScreen(),
         home: SplashScreen());
   }
 }

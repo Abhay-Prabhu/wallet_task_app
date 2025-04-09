@@ -56,12 +56,14 @@ class CustomCard1 extends StatelessWidget {
                     Text(
                       mainText,
                       style: TextStyle(
+                        fontFamily: 'Montserrat',
                           fontSize: context.font16,
                           fontWeight: FontWeight.w400),
                     ),
                     Text(
                       subText,
                       style: TextStyle(
+                        fontFamily: 'Montserrat',
                           fontSize: context.font14,
                           fontWeight: FontWeight.w300,
                           color: AppTheme.grey),

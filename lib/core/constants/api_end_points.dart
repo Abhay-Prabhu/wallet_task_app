@@ -5,9 +5,8 @@ class ApiEndPoints {
 
   //! ******* Api End points ******//
 
-  // ***** Wallet ******//
-  //
-  //
+  //! Feature -  ***** Wallet ******//
+  
   //  *** verify add payment details
   static const verifyAddPayment = "/wallet/add-payment-details";
 
@@ -25,4 +24,11 @@ class ApiEndPoints {
 
   // *** Delete Redeem Details *** //
   static const deleteRedeem = "/wallet/delete-redeem-details";
+
+ // *** initiate update payment *** //
+  static const initiateUpdate = "/wallet/initiate-editing-payment-details";
+
+  //  *** update payment details *** //
+  static const updateRedeem = "/wallet/update-payment-details";
+
 }

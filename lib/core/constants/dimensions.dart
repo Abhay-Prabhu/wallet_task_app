@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 extension Dimensions on BuildContext {
   double get headerBar => 150;
-  double get headerLine => 15;
+  double get headerLine => 8;
   double get buttonHeight => 50;
   double get dividerHeight => 3;
   double get dividerHeight1 => 1;
@@ -17,6 +17,8 @@ extension Dimensions on BuildContext {
   double get space16 => 16;
   double get space4 => 4;
   double get space8 => 8;
+  double get space20 => 20;
+  double get space32 => 32;
 
   //  ****** border width *****//
   double get borderWidth => 2;

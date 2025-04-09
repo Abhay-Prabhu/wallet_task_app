@@ -47,6 +47,7 @@ class ImportantNote extends StatelessWidget {
                   Text(
                     "Important",
                     style: TextStyle(
+                      fontFamily: 'Montserrat',
                         fontSize: context.font14,
                         color: AppTheme.black,
                         fontWeight: FontWeight.w400),
@@ -60,6 +61,7 @@ class ImportantNote extends StatelessWidget {
                 "Please ensure all details are correct. These details will be used for transferring payments and rewards to your account",
                 textAlign: TextAlign.justify,
                 style: TextStyle(
+                  fontFamily: 'Montserrat',
                     fontSize: context.font14,
                     color: AppTheme.grey,
                     fontWeight: FontWeight.w400),

@@ -26,7 +26,7 @@ class SavePaymentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> savePayment({
+  Future<bool> savePayment({
     required String otp,
     required String hastedDetails,
     required String hastedOtp,
@@ -46,13 +46,16 @@ class SavePaymentProvider extends ChangeNotifier {
         _paymentModel = response;
         _errorMessage = null;
         setState(ViewState.loaded);
+        return true;
       } else {
         _errorMessage = 'Failed to save payment details.';
         setState(ViewState.error);
+        return false;
       }
     } catch (e) {
       _errorMessage = e.toString();
       setState(ViewState.error);
+      return false;
     } finally {
       _isSubmitting = false;
       notifyListeners();

@@ -1,67 +1,145 @@
 import 'package:flutter/material.dart';
 import 'package:match_maker/core/utils/enum.dart';
+import 'package:match_maker/features/wallet/models/initiate_edit_redeem_model.dart';
 import 'package:match_maker/features/wallet/models/verify_payment_model.dart';
 import 'package:match_maker/features/wallet/services/wallet_service.dart';
 
-class AddAccountProvider extends ChangeNotifier {
-  static GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+class AccountProvider extends ChangeNotifier {
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController bankNameController = TextEditingController();
+  final TextEditingController accountNumberController = TextEditingController();
+  final TextEditingController confirmAccountNumberController =
+      TextEditingController();
+  final TextEditingController ifscCodeController = TextEditingController();
+  final TextEditingController bankBranchController = TextEditingController();
 
   ViewState _state = ViewState.initial;
-
   ViewState get state => _state;
 
-  void setstate(ViewState newState) {
+  GlobalKey<FormState> get formKey => _formKey;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
+  bool get isSubmitting => _state == ViewState.loading;
+
+  bool isEditMode = false;
+  String? bankAccountNumber;
+
+  VerifyPaymentModel? accountModel;
+  InitiateEditPaymentModel? initiateEditModel;
+
+  void setState(ViewState newState) {
     _state = newState;
     notifyListeners();
   }
-
-  GlobalKey<FormState> get formkey => _formkey;
-  VerifyPaymentModel? accountModel;
-
-  String? _errorMessage;
-
-  String? get errorMessage => _errorMessage;
 
   void clearMessage() {
     _errorMessage = null;
     notifyListeners();
   }
 
-  bool _isSubmitting = false;
-  bool get isSubmittimg => _isSubmitting;
+  void setEditMode({
+    required bool editMode,
+    String? existingAccountNumber,
+  }) {
+    isEditMode = editMode;
+    bankAccountNumber = existingAccountNumber;
+    notifyListeners();
+  }
+
+  void initializeFields({
+    required String bankName,
+    required String accountNumber,
+    required String confirmAccountNumber,
+    required String ifscCode,
+    required String bankBranch,
+  }) {
+    bankNameController.text = bankName;
+    accountNumberController.text = accountNumber;
+    confirmAccountNumberController.text = confirmAccountNumber;
+    ifscCodeController.text = ifscCode;
+    bankBranchController.text = bankBranch;
+  }
 
   Future<void> submitForm({
+    required bool isEditMode,
     required String walletId,
     required String paymentMethod,
-    required String bankAccountNumber,
-    required String confirmAccountNumber,
-    required String bankIfsc,
-    required String bankName,
-    required String bankBranch,
   }) async {
-    if (!formkey.currentState!.validate()) return;
-    setstate(ViewState.loading);
+    if (!formKey.currentState!.validate()) return;
+
+    setState(ViewState.loading);
     try {
-      final response = await WalletService.verifyAddPayment(
+      if (isEditMode) {
+        final response = await WalletService.initiateEditRedeem(
           walletId: walletId,
           paymentMethod: paymentMethod,
-          bankIfsc: bankIfsc,
-          bankName: bankName,
-          bankBranch: bankBranch);
-      if (response != null) {
-        accountModel = response;
-        _errorMessage = null;
-        print("response from submit form ${response.otp}");
-        setstate(ViewState.loaded);
-      } else {
-        _errorMessage = 'Failed to verify payment.';
+          bankAccountNumber: bankAccountNumber ?? accountNumberController.text,
+          bankIfsc: ifscCodeController.text,
+          bankName: bankNameController.text,
+          bankBranch: bankBranchController.text,
+        );
+
+        final updatePaymentResponse = await WalletService.updateRedeem(
+          hashedOtp: response?.hashedOtp ?? "",
+          hashtedDetails: response?.hashtedDetails ?? "",
+          message: response?.message ?? "",
+        );
+
         print(
-            "error while submitting the form verify add bank account -- ${errorMessage}");
-        setstate(ViewState.error);
+            "after completing the update : ${updatePaymentResponse?.message}");
+        if (response != null) {
+          // accountModel = response;
+          _errorMessage = null;
+
+          setState(ViewState.loaded);
+          clearControllers();
+        } else {
+          _errorMessage = 'Failed to verify payment.';
+          setState(ViewState.error);
+        }
+      } else {
+        print(
+            "Details sent for add payment walletId: $walletId , paymentMethod: $paymentMethod, ifsc: ${ifscCodeController.text}, bank name: ${bankNameController.text}, bank branch: ${bankBranchController.text}");
+        final response = await WalletService.verifyAddPayment(
+          walletId: walletId,
+          paymentMethod: paymentMethod,
+          bankIfsc: ifscCodeController.text,
+          bankName: bankNameController.text,
+          bankBranch: bankBranchController.text,
+        );
+
+        if (response != null) {
+          accountModel = response;
+          _errorMessage = null;
+          setState(ViewState.loaded);
+        } else {
+          _errorMessage = 'Failed to verify payment.';
+          setState(ViewState.error);
+        }
+        // });
       }
     } catch (e) {
       _errorMessage = e.toString();
-      setstate(ViewState.error);
+      setState(ViewState.error);
     }
+  }
+
+  void disposeControllers() {
+    bankNameController.dispose();
+    accountNumberController.dispose();
+    confirmAccountNumberController.dispose();
+    ifscCodeController.dispose();
+    bankBranchController.dispose();
+  }
+
+  void clearControllers() {
+    bankNameController.clear();
+    accountNumberController.clear();
+    confirmAccountNumberController.clear();
+    ifscCodeController.clear();
+    bankBranchController.clear();
   }
 }

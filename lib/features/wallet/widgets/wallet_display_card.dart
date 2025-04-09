@@ -8,6 +8,7 @@ class WalletDisplayCard extends StatelessWidget {
   final String value;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onComplete;
 
   const WalletDisplayCard({
     required this.label,
@@ -15,6 +16,7 @@ class WalletDisplayCard extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     super.key,
+    required this.onComplete,
   });
 
   @override
@@ -30,11 +32,16 @@ class WalletDisplayCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(color: AppTheme.black.withOpacity(0.8), fontSize: context.font12)),
+                Text(label,
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                        color: AppTheme.black.withOpacity(0.8),
+                        fontSize: context.font12)),
                 SizedBox(height: 4),
                 Text(
                   value,
                   style: TextStyle(
+                    fontFamily: 'Montserrat',
                     color: AppTheme.darkGold,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -43,7 +50,6 @@ class WalletDisplayCard extends StatelessWidget {
               ],
             ),
           ),
-
           Row(
             children: [
               IconButton(

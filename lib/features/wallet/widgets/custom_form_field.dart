@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:match_maker/core/constants/dimensions.dart';
 
 import '../../../core/app_theme.dart';
@@ -7,8 +8,11 @@ class CustomFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextEditingController textController;
   final String hintText;
+   final TextInputType? keyboardType;
+  final bool isNumeric;
+  final bool allowSpecialCharacters;
   const CustomFormField(
-      {super.key, required this.hintText, required this.validator, required this.textController});
+      {super.key, required this.hintText, required this.validator, required this.textController, this.keyboardType, this.isNumeric = false, this.allowSpecialCharacters = false});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +21,16 @@ class CustomFormField extends StatelessWidget {
       child: TextFormField(
         controller: textController,
         validator: validator,
+        keyboardType: keyboardType ?? TextInputType.text,
+        inputFormatters: [
+          FilteringTextInputFormatter.deny(RegExp(r'^\s')),
+
+          if (isNumeric)
+            FilteringTextInputFormatter.digitsOnly,
+
+          if (!allowSpecialCharacters)
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s]')),
+        ],
         decoration: InputDecoration(
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(color: AppTheme.error),
@@ -47,21 +61,26 @@ class CustomFormField extends StatelessWidget {
           hintText: hintText,
           errorMaxLines: 3,
           errorStyle: TextStyle(
+            fontFamily: 'Montserrat',
               fontSize: context.font16,
               color: AppTheme.error,
               fontWeight: FontWeight.w400),
           hintStyle: TextStyle(
+            fontFamily: 'Montserrat',
               fontSize: context.font16,
               color: AppTheme.grey,
               fontWeight: FontWeight.w400),
         ),
         style: TextStyle(
+          fontFamily: 'Montserrat',
             fontSize: context.font16,
-            color: AppTheme.black,
-            fontWeight: FontWeight.w400),
+            color: AppTheme.black.withOpacity(0.7),
+            fontWeight: FontWeight.w200),
         maxLines: null,
         minLines: 1,
       ),
     );
   }
 }
+
+

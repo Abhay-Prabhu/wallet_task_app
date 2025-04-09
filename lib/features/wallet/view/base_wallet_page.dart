@@ -21,61 +21,79 @@ class BaseWalletPage extends StatelessWidget {
       body: Column(
         children: [
           // *** head bar ***//
-          Container(
+          SizedBox(
             width: double.infinity,
             height: context.headerBar,
-            decoration: BoxDecoration(color: AppTheme.primaryBlue),
-            child: SafeArea(
-                child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.padding24),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.arrow_back,
-                    color: AppTheme.white,
+            child: Stack(
+              children: [
+                Container(
+                    height: context.headerBar, color: AppTheme.primaryBlue),
+                Positioned.fill(
+                  child: Image.asset(
+                    "assets/images/wallet_header_bg.png",
+                    color: AppTheme.darkGold.withOpacity(0.2),
+                    height: context.headerBar / 2,
+                    fit: BoxFit.fitWidth,
+                    alignment: Alignment.topCenter,
                   ),
-                  SizedBox(
-                    width: context.space16,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                SafeArea(
+                    child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: context.padding24),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        "wallet",
-                        style:
-                            TextStyle(color: AppTheme.darkGold, fontSize: context.font16, fontWeight: FontWeight.w600),
+                      Icon(
+                        Icons.arrow_back,
+                        color: AppTheme.white,
                       ),
-                      Text(
-                        "Your accounts",
-                        style:
-                            TextStyle(color: AppTheme.darkGold, fontSize: context.font20, fontWeight: FontWeight.bold),
+                      SizedBox(
+                        width: context.space16,
                       ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "wallet",
+                            style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                color: AppTheme.darkGold,
+                                fontSize: context.font14,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            "Your accounts",
+                            style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                color: AppTheme.darkGold,
+                                fontSize: context.font20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
-
-            )),
+                  ),
+                )),
+              ],
+            ),
           ),
           Container(
-              decoration: BoxDecoration(
+            decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: AppTheme.black, width: context.borderWidth)
-                ),
+                    bottom: BorderSide(
+                        color: AppTheme.black, width: context.borderWidth)),
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                  AppTheme.gradient1,
-                  AppTheme.gradient2,
-                  AppTheme.gradient1,
-                ])
-              ),
-              height: context.headerLine,
-            ),
+                    begin: Alignment.topLeft,
+                    end: Alignment.topRight,
+                    colors: [
+                      AppTheme.gradient1,
+                      AppTheme.gradient2,
+                      AppTheme.gradient1,
+                    ])),
+            height: context.headerLine,
+          ),
 
           // *** child ***//
           Expanded(child: content)
