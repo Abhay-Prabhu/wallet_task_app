@@ -58,6 +58,7 @@ class _SelectAccountTypeState extends State<SelectAccountType> {
                 onTap: () {
                   // Navigator.of(context).pop();
                   Bottomsheet.showBottom(
+                    isAddBankAccount: true,
                       title: "Add Bank Account",
                       context: context,
                       content: AddEditBankAccount(

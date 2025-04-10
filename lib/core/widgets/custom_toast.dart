@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:match_maker/main.dart';
 
 import '../app_theme.dart';
 
@@ -7,11 +8,12 @@ import '../app_theme.dart';
 
 class CustomToast {
   static void showToast({required String message, required bool isError, int seconds = 10, required BuildContext context}) {
-    Fluttertoast.cancel(); // Cancel any existing toasts
+    Fluttertoast.cancel(); 
 
     FToast fToast = FToast();
-    // fToast.init(navigatorKey.currentContext!); // context must be globally accessible
-fToast.init(context);
+//     fToast.init(navigatorKey.currentContext!); 
+// fToast.init(context);
+
     Widget toast = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       margin: const EdgeInsets.symmetric(horizontal: 20),

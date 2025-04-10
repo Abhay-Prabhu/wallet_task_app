@@ -23,7 +23,14 @@ class VerifyOTP extends StatelessWidget {
     final deviceWidth = MediaQuery.of(context).size.width;
     final addAccountProvider =
         Provider.of<AccountProvider>(context, listen: true);
+
+
+ final otpTimerProvider =
+        Provider.of<OTPTimerProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      otpTimerProvider.startTimer();
+    });
+ WidgetsBinding.instance.addPostFrameCallback((_) {
       final otp = addAccountProvider.initiateEditModel?.hashedOtp;
       if (otp != null && otp.isNotEmpty) {
         CustomToast.showToast(
@@ -32,9 +39,9 @@ class VerifyOTP extends StatelessWidget {
           context: context,
         );
       }
-    });
 
-    final otpTimerProvider = Provider.of<OTPTimerProvider>(context);
+      otpTimerProvider.startTimer();
+    });
     final provider = Provider.of<SavePaymentProvider>(context, listen: true);
     return Container(
       width: double.infinity,
@@ -115,15 +122,16 @@ class VerifyOTP extends StatelessWidget {
               child: Selector<OTPTimerProvider, int>(
                   selector: (context, provider) => provider.start,
                   builder: (context, start, _) {
-                    return Text(
-                      start == 0 ? "Resend OTP" : "Resend OTP in ${start}s",
+                    return otpTimerProvider.isTimerActive ?
+                     Text(
+                      start == 0 ? "" : "Resend OTP in ${start}s",   
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           fontSize: context.font16,
                           color: AppTheme.black.withOpacity(0.4),
                           fontWeight: FontWeight.w500),
-                    );
+                    ): SizedBox();
                   }),
             ),
           ),

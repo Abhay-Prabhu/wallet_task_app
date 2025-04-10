@@ -11,6 +11,9 @@ class OTPTimerProvider extends ChangeNotifier {
   int get start => _start;
   
   void startTimer() {
+    print("**** print from start timer");
+    _timer?.cancel(); 
+  _start = 30; 
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
@@ -21,9 +24,11 @@ class OTPTimerProvider extends ChangeNotifier {
           notifyListeners();
         } else {
           _start--;
+          notifyListeners();
         }
       },
     );
+    notifyListeners();
   }
 
   @override

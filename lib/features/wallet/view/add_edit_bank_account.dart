@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, invalid_use_of_protected_member
 
 import 'package:flutter/material.dart';
 import 'package:match_maker/core/constants/dimensions.dart';
@@ -51,6 +51,11 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
   void initState() {
     super.initState();
     provider = Provider.of<AccountProvider>(context, listen: false);
+    provider.bankNameController.addListener(_onFormChanged);
+    provider.accountNumberController.addListener(_onFormChanged);
+    provider.confirmAccountNumberController.addListener(_onFormChanged);
+    provider.ifscCodeController.addListener(_onFormChanged);
+    provider.bankBranchController.addListener(_onFormChanged);
 
     if (widget.isEditMode && widget.bankAccountmodel != null) {
       provider.initializeFields(
@@ -62,6 +67,8 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
       );
     }
   }
+
+  void _onFormChanged() => provider.notifyListeners();
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +121,9 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
                 allowSpecialCharacters: false,
                 isNumeric: true,
                 textController: provider.accountNumberController,
-                validator: (value) => Validations.validateAccountNumber(value),
+                validator: (value) => Validations.validateAccountNumber(
+                    provider.accountNumberController.text),
+                isPassword: true,
                 hintText: "Example: 123456789012",
               ),
               SizedBox(height: context.space16),
@@ -130,9 +139,13 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
                 height: context.space4,
               ),
               CustomFormField(
+                isPassword: true,
+                originalPasswordController: provider.accountNumberController,
                 keyboardType: TextInputType.number,
                 textController: provider.confirmAccountNumberController,
-                validator: (value) => Validations.validateConfirmAccountNumber(value, provider.accountNumberController.text ),
+                validator: (value) => Validations.validateConfirmAccountNumber(
+                    provider.accountNumberController.text,
+                    provider.confirmAccountNumberController.text),
                 isNumeric: true,
                 allowSpecialCharacters: false,
                 hintText: "Example: 123456789012",
@@ -177,62 +190,70 @@ class _AddEditBankAccountState extends State<AddEditBankAccount> {
               SizedBox(height: context.space16),
               // *** Add Bank Account Button ***//
               CustomButton(
-                  content: provider.isSubmitting
-                      ? CustomCircularProgressIndicator(
+                content: provider.isSubmitting
+                    ? CustomCircularProgressIndicator(
+                        color: AppTheme.white,
+                        height: context.space20,
+                        width: context.space20,
+                      )
+                    : Text(
+                        widget.isEditMode
+                            ? "Save Bank Account"
+                            : "Add Bank Account",
+                        style: TextStyle(
                           color: AppTheme.white,
-                          height: context.space20,
-                          width: context.space20,
-                        )
-                      : Text(
-                          widget.isEditMode
-                              ? "Save Bank Account"
-                              : "Add Bank Account",
-                          style: TextStyle(
-                            color: AppTheme.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.font14,
-                          ),
+                          fontWeight: FontWeight.bold,
+                          fontSize: context.font14,
                         ),
-                  onTap: () async {
-                    if (provider.formKey.currentState!.validate()) {
-                      provider.isEditMode = widget.isEditMode;
-                      await provider.submitForm(
-                        isEditMode: widget.isEditMode,
-                        walletId: LocalStorage.getWalletId().toString(),
-                        paymentMethod: "BANK_ACCOUNT",
-                      );
-
-                      if (provider.state == ViewState.loaded) {
-                        if (!widget.isEditMode) {
-                          final otp =
-                              provider.accountModel?.otp;
-                            print("print from otp {}**************");
-                            CustomToast.showToast(context: context,
-                                message: "Otp is $otp", isError: false);
-                          // *** Schedule the next bottom sheet to be shown after this frame ***//
-                          WidgetsBinding.instance
-                              .addPostFrameCallback((_) async {
-                            await Bottomsheet.showBottom(
-                              title: "Verify OTP",
+                      ),
+                onTap: provider.isFormFilled && !provider.isSubmitting
+                    ? () async {
+                        if (provider.formKey.currentState!.validate()) {
+                          provider.isEditMode = widget.isEditMode;
+                          await provider.submitForm(
+                            isEditMode: widget.isEditMode,
+                            walletId: LocalStorage.getWalletId().toString(),
+                            paymentMethod: "BANK_ACCOUNT",
+                          );
+                          if (provider.state == ViewState.loaded) {
+                            if (!widget.isEditMode) {
+                              final otp = provider.accountModel?.otp;
+                              print("print from otp {}**************");
+                              CustomToast.showToast(
+                                  context: context,
+                                  message: "Otp is $otp",
+                                  isError: false);
+                              // *** Schedule the next bottom sheet to be shown after this frame ***//
+                              WidgetsBinding.instance
+                                  .addPostFrameCallback((_) async {
+                                await Bottomsheet.showBottom(
+                                  isAddBankAccount: false,
+                                  title: "Verify OTP",
+                                  context: context,
+                                  content: ChangeNotifierProvider(
+                                    create: (_) => SavePaymentProvider(),
+                                    child: VerifyOTP(),
+                                  ),
+                                );
+                              });
+                            }
+                          } else if (provider.state == ViewState.error) {
+                            CustomToast.showToast(
                               context: context,
-                              content: ChangeNotifierProvider(
-                                create: (_) => SavePaymentProvider(),
-                                child: VerifyOTP(),
-                              ),
-                            );  
-                          });
+                              isError: true,
+                              message: "Something went wrong",
+                            );
+                          }
                         }
-                      } else if (provider.state == ViewState.error) {
-                        
-                        
-
-                        CustomToast.showToast(context: context,
-                          isError: true,
-                          message: "Something went wrong",
-                        );
                       }
-                    }
-                  }),
+                    : () {
+                        CustomToast.showToast(
+                            context: context,
+                            isError: true,
+                            message: "Please check all the fields");
+                        print("print from conditional last ");
+                      },
+              ),
 
               SizedBox(
                 height: MediaQuery.of(context).viewInsets.bottom,

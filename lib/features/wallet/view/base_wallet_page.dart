@@ -6,7 +6,10 @@ import '../../../core/app_theme.dart';
 
 class BaseWalletPage extends StatelessWidget {
   final Widget content;
-  const BaseWalletPage({super.key, required this.content});
+  const BaseWalletPage({
+    super.key,
+    required this.content,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:match_maker/core/constants/dimensions.dart';
 import 'package:match_maker/features/wallet/widgets/divider.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/app_theme.dart';
+import '../view_model/add_account_provider.dart';
 
 class Bottomsheet {
   static Future<bool?> showBottom({
@@ -10,11 +12,12 @@ class Bottomsheet {
     required BuildContext context,
     required Widget content,
     VoidCallback? onDismissed,
+    required bool isAddBankAccount,
   }) async {
+    final provider = Provider.of<AccountProvider>(context, listen: false);
     final result = await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      
       backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius:
@@ -45,6 +48,9 @@ class Bottomsheet {
                       children: [
                         GestureDetector(
                           onTap: () {
+                            isAddBankAccount
+                                ? provider.clearControllers()
+                                : null;
                             Navigator.of(context).pop();
                           },
                           child: Icon(
@@ -59,7 +65,7 @@ class Bottomsheet {
                         Text(
                           title,
                           style: TextStyle(
-                            fontFamily: 'Montserrat',
+                              fontFamily: 'Montserrat',
                               fontSize: 18,
                               color: AppTheme.black,
                               fontWeight: FontWeight.bold),

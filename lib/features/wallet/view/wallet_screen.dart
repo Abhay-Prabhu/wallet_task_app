@@ -37,6 +37,8 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
       Provider.of<CheckBalance>(context, listen: false).checkBalance();
+      Provider.of<RedeemDetailsProvider>(context, listen: false)
+          .fetchRedeemDetails();
     });
 
     return BaseWalletPage(
@@ -116,6 +118,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     ),
                   );
                 } else {
+                
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
@@ -140,6 +143,7 @@ class _WalletScreenState extends State<WalletScreen> {
                         },
                         onEdit: () async {
                           final res = await Bottomsheet.showBottom(
+                            isAddBankAccount: true,
                               title: "Edit Redeem Payment",
                               context: context,
                               content: AddEditBankAccount(
@@ -247,6 +251,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       ),
                     ),
                     onTap: () => Bottomsheet.showBottom(
+                      isAddBankAccount: true,
                       title: "Select Account Type",
                       context: context,
                       content: SelectAccountType(),

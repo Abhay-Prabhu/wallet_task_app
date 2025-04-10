@@ -142,4 +142,14 @@ class AccountProvider extends ChangeNotifier {
     ifscCodeController.clear();
     bankBranchController.clear();
   }
+
+  bool get isFormFilled {
+  return bankNameController.text.isNotEmpty &&
+      accountNumberController.text.isNotEmpty &&
+      confirmAccountNumberController.text.isNotEmpty &&
+      ifscCodeController.text.isNotEmpty &&
+      bankBranchController.text.isNotEmpty &&
+      accountNumberController.text == confirmAccountNumberController.text;
+}
+
 }

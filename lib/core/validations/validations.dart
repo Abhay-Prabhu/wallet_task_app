@@ -18,8 +18,12 @@ class Validations {
     if (value == null || value.trim().isEmpty) {
       return "Account number cannot be empty";
     }
-    if (!RegExp(r'^\d{12}$').hasMatch(value.trim())) {
-      return "Account number should be 12 digits";
+    if (!RegExp(r'^\d{9,18}$').hasMatch(value.trim())) {
+      return "Account number must be between 9 and 18 digits";
+    }
+    // final trimmed = value.trim();
+    if (RegExp(r'^(\d)\1*$').hasMatch(value)) {
+      return "Invalid account number (cannot contain all same digits)";
     }
     return null;
   }
@@ -30,32 +34,58 @@ class Validations {
       return "IFSC code cannot be empty";
     }
 
-    final ifscRegex = RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$');
+    final RegExp ifscRegex = RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$');
+
     if (!ifscRegex.hasMatch(value.trim().toUpperCase())) {
-      return "Invalid IFSC code format (e.g., SBIN0001234)";
+      return "Invalid IFSC code format (e.g., AAAA0BBBBBB)";
     }
 
     return null;
   }
 
+  // *** Validate account number ***//
+  // static String? validateConfirmAccountNumber(String? value, String? confirmValue) {
+  //   if (confirmValue== null || confirmValue.trim().isEmpty) {
+  //     return "Confirm account number cannot be empty";
+  //   }
 
-   // *** Validate account number ***//
-  static String? validateConfirmAccountNumber(String? value, String? confirmValue) {
-    if (confirmValue== null || confirmValue.trim().isEmpty) {
-      return "Confirm Account number cannot be empty";
+  //   if (confirmValue != value ) {
+  //     return "Account number and confirm account should match";
+  //   }
+
+  //   if (!RegExp(r'^\d{9,18}$').hasMatch(confirmValue.trim())) {
+  //     return " Confirm account number must be between 9 and 18 digits";
+  //   }
+  //   final trimmed = confirmValue.trim();
+  //   if (RegExp(r'^(\d)\1*$').hasMatch(trimmed)) {
+  //   return "Invalid account number (cannot contain all same digits)";
+  // }
+  //   return null;
+  // }
+  static String? validateConfirmAccountNumber(
+      String? original, String? confirm) {
+    // final orig = original?.trim();
+    // final conf = confirm?.trim();
+
+    if (confirm == null || confirm.isEmpty) {
+      return "Confirm account number cannot be empty";
     }
 
-    if (confirmValue != value ) {
+    if (original != confirm) {
+      print("Validation failed: $confirm != $original");
       return "Account number and confirm account should match";
     }
 
-    if (!RegExp(r'^\d{12}$').hasMatch(confirmValue.trim())) {
-      return " Confirm Account number should be 12 digits";
+    if (!RegExp(r'^\d{9,18}$').hasMatch(confirm)) {
+      return " Confirm account number must be between 9 and 18 digits";
     }
+
+    if (RegExp(r'^(\d)\1*$').hasMatch(confirm)) {
+      return "Invalid account number (cannot contain all same digits)";
+    }
+
     return null;
   }
-
- 
 
   //  *** Validate Bank Branch  ***//
   static String? validateBankBranch(String? value) {
@@ -71,5 +101,3 @@ class Validations {
     return null;
   }
 }
-
-
